@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd"
+>
+    <!-- 1、启动SpringMVC注解 -->
+    <mvc:annotation-driven>
+        <!-- 处理Json返回前台乱码问题 -->
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>aplication/json;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
+                        <!-- application 可以再任意form 表单里面enctype 属性默认找到 -->
+                        <value>application/x-www-form-urlencoded</value>
+                    </list>
+                </property>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 2、扫描 -->
+    <context:component-scan base-package="com.hezeu.**.controller" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+    </context:component-scan>
+
+    <!-- 3、配置视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+        <!-- 4、支持JSTL视图 -->
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <!-- 5、配置排序，因为我们只是使用jsp作为展示方式，为了提高效率 -->
+        <property name="order" value="10" />
+    </bean>
+    <!-- 对静态文件的访问 -->
+    <mvc:default-servlet-handler default-servlet-name="default" />
+    <!-- 文件上传解析器，Id值智能填写MultipartResolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 上传的编码格式 -->
+        <property name="defaultEncoding" value="Utf-8" />
+        <!-- 上传文件的大小，20M 1024*1024*20 -->
+        <property name="maxUploadSize" value="20971520" />
+        <!-- 上传文件缓存 -->
+        <property name="maxInMemorySize" value="2048" />
+        <!-- 上传文件的延时，提高上传效率 -->
+        <property name="resolveLazily" value="true" />
+    </bean>
+
+</beans>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd"
+>
+    <!-- 1、启动Spring 注解 -->
+    <context:annotation-config />
+    <!-- 2、扫描 -->
+    <context:component-scan base-package="com.hezeu">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+    <!-- 3、读取配置文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- 4、配置数据源信息 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.mysql.driver}" />
+        <property name="url" value="${jdbc.mysql.url}" />
+        <property name="username" value="${jdbc.mysql.username}" />
+        <property name="password" value="${jdbc.mysql.password}" />
+    </bean>
+    <!-- 5、创建SqlSession工厂,实例化SqlSessionFactory接口 -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <!-- 配置数据源 -->
+    <property name="dataSource" ref="dataSource" />
+    <!-- 读取Mybatis核心配置文件 -->
+    <property name="configLocation" value="classpath:mybatis-config.xml" />
+    <!-- 读取所有映射文件 -->
+    <property name="mapperLocations" value="classpath:com/hezeu/**/mapper/**Mapper.xml" />
+    </bean>
+    <!-- 6、接口自动实现类的配置，为了支持接口代理模式，因为我们没有实现类 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <!-- 配置所有接口所在位置 -->
+    <property name="basePackage">
+        <value>com.hezeu.**.dao</value>
+    </property>
+    <!-- 配置SqlSessionFactory -->
+    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean" />
+    <!-- 拓展：因为没有实现类，所以无法使用@Repository注解,MyBatis配置支持该注解的使用 -->
+    </bean>
+    <!-- 7、配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 引数据源信息 -->
+       <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- 8、配置约定哪些方法需要被事务管理器进行管理 -->
+    <tx:advice id="serviceAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 针对查询方法，无法变更数据库 -->
+            <tx:method name="load*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="sel*" read-only="true"/>
+            <tx:method name="check*" read-only="true"/>
+            <!-- 变更数据库 -->
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+</beans>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hezeu.dao.UserDao">
+    <sql id="Base_Column_List">
+        Id,User_Account,User_Password,User_Name,User_Age,User_Phone,User_States,User_Roles
+    </sql>
+    <resultMap type="Users" id="BaseResultMap">
+        <id column="Id" javaType="java.lang.Integer" jdbcType="INTEGER" property="Id" />
+        <result column="User_Account" property="User_Account" jdbcType="VARCHAR" javaType="String" />
+        <result column="User_Password" property="User_Password" jdbcType="VARCHAR" javaType="String" />
+        <result column="User_Name" property="User_Name" jdbcType="VARCHAR" javaType="String" />
+        <result column="User_Age" property="User_Age" jdbcType="INTEGER" javaType="java.lang.Integer" />
+        <result column="User_Phone" property="User_Phone" jdbcType="VARCHAR" javaType="String" />
+        <result column="User_States" property="User_State" jdbcType="INTEGER" javaType="java.lang.Integer" />
+        <result column="User_Roles" property="User_Role" jdbcType="INTEGER" javaType="java.lang.Integer" />
+    </resultMap>
+    <select id="selectByExample" parameterType="com.hezeu.model.Users" resultType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from Users
+        where User_Account=#{User_Account} and User_Password = #{User_Password} and (User_Roles = 0 or User_Roles= 1 or User_Roles = 2) and User_States = 1
+    </select>
+</mapper>

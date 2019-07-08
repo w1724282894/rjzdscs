@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration >
+
+   
+   
+    <!-- 自定义类型设置别名 -->
+ <typeAliases>
+        <!-- ibatis  2.0 使用的标签    -->
+      <!--    <typeAlias type="com.shxt.model.User" alias="SHXT"/> -->
+        <!--  ibatis  3.0 推荐使用的标签    -->
+     <package name="com.hezeu.model"/>
+     
+    </typeAliases>
+    
+   
+
+</configuration>
